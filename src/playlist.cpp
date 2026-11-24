@@ -128,13 +128,45 @@ bool Playlist::IsSupportedMedia(const QString &strFileName)
         return false;
     }
 
-    return strFileName.endsWith(".mkv", Qt::CaseInsensitive) ||
-        strFileName.endsWith(".rmvb", Qt::CaseInsensitive) ||
-        strFileName.endsWith(".mp4", Qt::CaseInsensitive) ||
-        strFileName.endsWith(".avi", Qt::CaseInsensitive) ||
-        strFileName.endsWith(".flv", Qt::CaseInsensitive) ||
-        strFileName.endsWith(".wmv", Qt::CaseInsensitive) ||
-        strFileName.endsWith(".3gp", Qt::CaseInsensitive);
+    //视频：容器格式，通常含视频+音频流
+    static const char *const videoExts[] = {
+        ".mkv", ".rmvb", ".mp4", ".avi", ".flv", ".wmv", ".3gp",
+        ".m4v", ".mov", ".ts", ".webm",
+    };
+    //音频：纯音频文件，播放时没有视频流（video_refresh 已做判空处理）
+    static const char *const audioExts[] = {
+        ".mp3", ".flac", ".wav", ".aac", ".m4a", ".ogg", ".oga",
+        ".opus", ".wma", ".ape", ".ac3", ".dts", ".alac",
+    };
+
+    for (const char *ext : videoExts)
+    {
+        if (strFileName.endsWith(QLatin1String(ext), Qt::CaseInsensitive))
+        {
+            return true;
+        }
+    }
+
+    for (const char *ext : audioExts)
+    {
+        if (strFileName.endsWith(QLatin1String(ext), Qt::CaseInsensitive))
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+QString Playlist::MediaFileFilter()
+{
+    //与 IsSupportedMedia() 中的扩展名列表保持一致
+    return QStringLiteral(
+        "媒体文件(*.mkv *.mp4 *.avi *.flv *.wmv *.rmvb *.3gp *.m4v *.mov *.ts *.webm "
+        "*.mp3 *.flac *.wav *.aac *.m4a *.ogg *.oga *.opus *.wma *.ape *.ac3 *.dts *.alac);;"
+        "视频文件(*.mkv *.mp4 *.avi *.flv *.wmv *.rmvb *.3gp *.m4v *.mov *.ts *.webm);;"
+        "音频文件(*.mp3 *.flac *.wav *.aac *.m4a *.ogg *.oga *.opus *.wma *.ape *.ac3 *.dts *.alac);;"
+        "所有文件(*.*)");
 }
 
 void Playlist::OnAddFile(QString strFileName)

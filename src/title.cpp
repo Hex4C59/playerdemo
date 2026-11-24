@@ -19,6 +19,7 @@
 #include "ui_title.h"
 
 #include "globalhelper.h"
+#include "playlist.h"
 
 #pragma execution_character_set("utf-8")
 
@@ -95,7 +96,7 @@ bool Title::InitUi()
 void Title::OpenFile()
 {
     QString strFileName = QFileDialog::getOpenFileName(this, "打开文件", QDir::homePath(), 
-        "视频文件(*.mkv *.rmvb *.mp4 *.avi *.flv *.wmv *.3gp)");
+        Playlist::MediaFileFilter());
 
     //用户取消选择时文件名可能为空，不往下传
     if (strFileName.isEmpty())

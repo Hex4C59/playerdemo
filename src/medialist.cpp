@@ -2,6 +2,7 @@
 #include <QFileDialog>
 
 #include "medialist.h"
+#include "playlist.h"
 
 #pragma execution_character_set("utf-8")
 
@@ -48,7 +49,7 @@ void MediaList::AddFile()
 {
     //QList<QUrl> QFileDialog::getOpenFileUrls
     QStringList listFileName = QFileDialog::getOpenFileNames(this, "打开文件", QDir::homePath(),
-        "视频文件(*.mkv *.rmvb *.mp4 *.avi *.flv *.wmv *.3gp)");
+        Playlist::MediaFileFilter());
 
     for (QString strFileName : listFileName)
     {

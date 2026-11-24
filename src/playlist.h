@@ -58,6 +58,14 @@ public:
      */
     static bool IsSupportedMedia(const QString &strFileName);
 
+    /**
+     * @brief	文件对话框使用的媒体文件过滤器
+     *
+     * @return	形如 "视频文件(*.mkv ...);;音频文件(*.mp3 ...);;所有文件(*)"
+     * @note	与 IsSupportedMedia() 支持的扩展名保持一致
+     */
+    static QString MediaFileFilter();
+
     void OnBackwardPlay();
     void OnForwardPlay();
 

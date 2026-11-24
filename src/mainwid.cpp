@@ -510,7 +510,7 @@ void MainWid::OnShowAbout()
 void MainWid::OpenFile()
 {
     QString strFileName = QFileDialog::getOpenFileName(this, "打开文件", QDir::homePath(),
-        "视频文件(*.mkv *.rmvb *.mp4 *.avi *.flv *.wmv *.3gp)");
+        Playlist::MediaFileFilter());
 
     emit SigOpenFile(strFileName);
 }
