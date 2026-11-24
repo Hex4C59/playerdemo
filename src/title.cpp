@@ -38,6 +38,7 @@ Title::Title(QWidget *parent) :
     connect(ui->MaxBtn, &QPushButton::clicked, this, &Title::SigMaxBtnClicked);
     connect(ui->FullScreenBtn, &QPushButton::clicked, this, &Title::SigFullScreenBtnClicked);
     connect(ui->MenuBtn, &QPushButton::clicked, this, &Title::SigShowMenu);
+    connect(ui->OpenFileBtn, &QPushButton::clicked, this, &Title::OpenFile);
  
     m_stMenu.addAction("最大化", this, &Title::SigMaxBtnClicked);
     m_stMenu.addAction("最小化", this, &Title::SigMinBtnClicked);
@@ -51,6 +52,7 @@ Title::Title(QWidget *parent) :
     ui->MaxBtn->setToolTip("最大化");
     ui->CloseBtn->setToolTip("关闭");
     ui->FullScreenBtn->setToolTip("全屏");
+    ui->OpenFileBtn->setToolTip("打开文件（Ctrl+O）");
 }
 
 Title::~Title()
@@ -82,6 +84,7 @@ bool Title::InitUi()
     GlobalHelper::SetIcon(ui->CloseBtn, 9, QChar(0xf00d));
 
     GlobalHelper::SetIcon(ui->FullScreenBtn, 9, QChar(0xf065));
+    GlobalHelper::SetIcon(ui->OpenFileBtn, 12, QChar(0xf07c));
     
     //ui->LogoLab->setToolTip("显示主菜单");
 
