@@ -1120,6 +1120,7 @@ int VideoCtl::stream_component_open(VideoState *is, int stream_index)
     case AVMEDIA_TYPE_AUDIO: is->last_audio_stream = stream_index; break;
     case AVMEDIA_TYPE_SUBTITLE: is->last_subtitle_stream = stream_index;break;
     case AVMEDIA_TYPE_VIDEO: is->last_video_stream = stream_index; break;
+    default: break;
     }
     if (forced_codec_name)
         codec = avcodec_find_decoder_by_name(forced_codec_name);

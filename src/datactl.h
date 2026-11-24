@@ -434,7 +434,21 @@ static int packet_queue_get(PacketQueue* q, AVPacket* pkt, int block, int* seria
 
 //解码器初始化（绑定解码结构体、数据包队列、信号量，初始化pts）
 static int decoder_init(Decoder* d, AVCodecContext* avctx, PacketQueue* queue, SDL_cond* empty_queue_cond) {
-    memset(d, 0, sizeof(Decoder));
+    //Decoder 含有 std::thread decode_thread，不是平凡可复制类型，
+    //不能用 memset 对整个结构体清零（会把 std::thread 内部状态写坏，
+    //属于未定义行为），逐个字段初始化。
+    d->pkt = NULL;
+    d->queue = NULL;
+    d->avctx = NULL;
+    d->pkt_serial = 0;
+    d->finished = 0;
+    d->packet_pending = 0;
+    d->empty_queue_cond = NULL;
+    d->start_pts = AV_NOPTS_VALUE;
+    d->start_pts_tb = AVRational{ 0, 1 };
+    d->next_pts = AV_NOPTS_VALUE;
+    d->next_pts_tb = AVRational{ 0, 1 };
+
     d->pkt = av_packet_alloc();
     if (!d->pkt)
         return AVERROR(ENOMEM);
@@ -484,6 +498,9 @@ static int decoder_decode_frame(Decoder *d, AVFrame *frame, AVSubtitle *sub) {
                             d->next_pts_tb = tb;
                         }
                     }
+                    break;
+                default:
+                    //其他类型（DATA/ATTACHMENT/UNKNOWN）不需要在这里取帧
                     break;
                 }
                 if (ret == AVERROR_EOF) {

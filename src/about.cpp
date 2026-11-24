@@ -44,7 +44,7 @@ void About::mousePressEvent(QMouseEvent *event)
     if (event->buttons() & Qt::LeftButton)
     {
         m_bMoveDrag = true;
-        m_DragPosition = event->globalPos() - this->pos();
+        m_DragPosition = event->globalPosition().toPoint() - this->pos();
     }
 
     QWidget::mousePressEvent(event);
@@ -61,7 +61,7 @@ void About::mouseMoveEvent(QMouseEvent *event)
 {
     if (m_bMoveDrag)
     {
-        move(event->globalPos() - m_DragPosition);
+        move(event->globalPosition().toPoint() - m_DragPosition);
     }
 
     QWidget::mouseMoveEvent(event);
