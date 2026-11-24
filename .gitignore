@@ -269,3 +269,24 @@ playerdemo/GeneratedFiles/ui_title.h
 playerdemo/GeneratedFiles/ui_mainwid.h
 /playerdemo/GeneratedFiles
 build
+
+# qmake 在项目根目录生成的构建产物
+.qmake.stash
+/qmake_stash_stub
+Makefile
+Makefile.*
+/ui_*.h
+/moc_*.cpp
+/moc_*.h
+/qrc_*.cpp
+/object_script.*
+*.obj
+*.res
+*.pdb
+
+# 打包产物
+/dist/
+
+# clangd / 编辑器语言服务
+/compile_commands.json
+/.cache/

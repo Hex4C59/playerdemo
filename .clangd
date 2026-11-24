@@ -1,0 +1,36 @@
+# clangd 配置
+#
+# 编译命令来源：compile_commands.json（由 scripts/gen-compile-commands.py 生成）
+# 若该文件缺失，clangd 会退化为纯启发式补全，Qt / SDL2 / FFmpeg 的头文件
+# 会全部报 "file not found"，因此改代码前请先运行：
+#
+#     python scripts/gen-compile-commands.py
+#
+CompileFlags:
+  # 去掉 MSVC 专有、clangd 无法识别的编译选项（qmake 生成的命令里可能混入）
+  Remove:
+    - -Zc:*
+    - -permissive-
+    - -FS
+    - -nologo
+    - /F*
+    - /Z*
+    - /EH*
+    - /wd*
+    - /w[0-9]*
+  # 把 MSVC 风格的选项转成 clangd 认识的写法
+  Compiler: clang++
+
+Diagnostics:
+  # 未使用的函数参数在很多虚函数重写里是常态，不必刷屏
+  UnusedIncludes: None
+  Suppress:
+    - unicode-zero-width-character
+
+InlayHints:
+  Enabled: true
+  ParameterNames: true
+  DeducedTypes: true
+
+Hover:
+  ShowAKA: true
