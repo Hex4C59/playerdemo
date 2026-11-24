@@ -49,6 +49,15 @@ public:
     void OnAddFile(QString strFileName);
     void OnAddFileAndPlay(QString strFileName);
 
+    /**
+     * @brief	判断路径是否为播放器支持的媒体文件
+     *
+     * @param	strFileName 文件完整路径
+     * @return	true 支持 false 不支持
+     * @note	
+     */
+    static bool IsSupportedMedia(const QString &strFileName);
+
     void OnBackwardPlay();
     void OnForwardPlay();
 

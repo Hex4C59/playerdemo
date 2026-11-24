@@ -14,6 +14,8 @@
 #include <QWidget>
 #include <QMouseEvent>
 #include <QDragEnterEvent>
+#include <QDragMoveEvent>
+#include <QDropEvent>
 #include <QMenu>
 #include <QAction>
 #include <QPropertyAnimation>
@@ -49,9 +51,9 @@ protected:
 
     void enterEvent(QEvent *event);
     void leaveEvent(QEvent *event);
-    //void dragEnterEvent(QDragEnterEvent *event);
-    //void dragMoveEvent(QDragMoveEvent *event);
-    //void dropEvent(QDropEvent *event);
+    void dragEnterEvent(QDragEnterEvent *event);
+    void dragMoveEvent(QDragMoveEvent *event);
+    void dropEvent(QDropEvent *event);
 
     //按键事件
     void keyReleaseEvent(QKeyEvent *event);
@@ -61,6 +63,9 @@ protected:
     void mouseMoveEvent(QMouseEvent *event);
 
     void contextMenuEvent(QContextMenuEvent* event);
+
+    //从拖放事件的 mime 数据里取第一个受支持的媒体文件
+    bool TakeMediaFileFromMime(QDropEvent *event, QString &strFileName);
 
 
 private:

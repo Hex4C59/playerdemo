@@ -19,6 +19,7 @@
 #include <QScreen>
 #include <QRect>
 #include <QFileDialog>
+#include <QKeySequence>
 #include <QJsonDocument>
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -61,14 +62,7 @@ MainWid::MainWid(QMainWindow *parent) :
     //setAttribute(Qt::WA_TranslucentBackground);
 
     //接受放下事件
-    //setAcceptDrops(true);
-    //可以清晰地看到放下过程中的图标指示
-    //setDropIndicatorShown(true);
-
-//    setAcceptDrops(true);
-//    setDragDropMode(QAbstractItemView::DragDrop);
-//    setDragEnabled(true);
-//    setDropIndicatorShown(true);
+    setAcceptDrops(true);
 
     //窗口大小调节
 //    QSizeGrip   *pSizeGrip = new QSizeGrip(this);
@@ -145,6 +139,13 @@ bool MainWid::Init()
     //AddActionFun(tr("关于"), &m_stMenu, &MainWid::OnShowAbout);
     //AddActionFun(tr("退出"), &m_stMenu, &MainWid::OnCloseBtnClicked);
 
+
+    //菜单项对应的槽函数表，键为 menu.json 中 "函数名/快捷键" 的函数名部分
+    map_act_.insert("OpenFile", &MainWid::OpenFile);
+    map_act_.insert("OnCloseBtnClicked", &MainWid::OnCloseBtnClicked);
+    map_act_.insert("OnShowAbout", &MainWid::OnShowAbout);
+    map_act_.insert("OnFullScreenPlay", &MainWid::OnFullScreenPlay);
+    map_act_.insert("OnShowSettingWid", &MainWid::OnShowSettingWid);
 
     InitMenu();
 
@@ -279,7 +280,7 @@ void MainWid::mousePressEvent(QMouseEvent *event)
         if (ui->TitleWid->geometry().contains(event->pos()))
         {
             m_bMoveDrag = true;
-            m_DragPosition = event->globalPos() - this->pos();
+            m_DragPosition = event->globalPosition().toPoint() - this->pos();
         }
     }
 
@@ -297,7 +298,7 @@ void MainWid::mouseMoveEvent(QMouseEvent *event)
 {
     if (m_bMoveDrag)
     {
-        move(event->globalPos() - m_DragPosition);
+        move(event->globalPosition().toPoint() - m_DragPosition);
     }
 
     QWidget::mouseMoveEvent(event);
@@ -306,6 +307,73 @@ void MainWid::mouseMoveEvent(QMouseEvent *event)
 void MainWid::contextMenuEvent(QContextMenuEvent* event)
 {
     m_stMenu.exec(event->globalPos());
+}
+
+//从拖放事件中取出第一个受支持的媒体文件
+bool MainWid::TakeMediaFileFromMime(QDropEvent *event, QString &strFileName)
+{
+    if (event == nullptr || event->mimeData() == nullptr || event->mimeData()->hasUrls() == false)
+    {
+        return false;
+    }
+
+    const QList<QUrl> urls = event->mimeData()->urls();
+    for (const QUrl &url : urls)
+    {
+        QString strPath = url.toLocalFile();
+        if (strPath.isEmpty())
+        {
+            continue;
+        }
+        if (Playlist::IsSupportedMedia(strPath))
+        {
+            strFileName = strPath;
+            return true;
+        }
+    }
+
+    return false;
+}
+
+void MainWid::dragEnterEvent(QDragEnterEvent *event)
+{
+    QString strFileName;
+    if (TakeMediaFileFromMime(event, strFileName))
+    {
+        event->acceptProposedAction();
+    }
+    else
+    {
+        event->ignore();
+    }
+}
+
+void MainWid::dragMoveEvent(QDragMoveEvent *event)
+{
+    QString strFileName;
+    if (TakeMediaFileFromMime(event, strFileName))
+    {
+        event->acceptProposedAction();
+    }
+    else
+    {
+        event->ignore();
+    }
+}
+
+void MainWid::dropEvent(QDropEvent *event)
+{
+    QString strFileName;
+    if (TakeMediaFileFromMime(event, strFileName))
+    {
+        event->acceptProposedAction();
+        //统一走入播放列表，与拖到视频画面时的行为一致
+        emit SigOpenFile(strFileName);
+    }
+    else
+    {
+        event->ignore();
+    }
 }
 
 void MainWid::OnFullScreenPlay()
@@ -494,16 +562,35 @@ void MainWid::MenuJsonParser(QJsonObject& json_obj, QMenu* menu)
             if (value_info.size() == 2)
             {
                 QString hot_key = value_info[1];
-                if (hot_key.length() > 0)
-                {
-                    key = key + "\t" + hot_key;
-                }
-                QAction* action = menu->addAction(key);
-
-                //TODO: 字符串与函数指针对应，连接信号
                 QString fun_str = value_info[0];
 
+                //快捷键由 QAction 自身渲染，不再手工拼接到标题里
+                QAction* action = menu->addAction(key);
+                if (!hot_key.isEmpty())
+                {
+                    QKeySequence seq(hot_key);
+                    if (!seq.isEmpty())
+                    {
+                        action->setShortcut(seq);
+                    }
+                }
 
+                //字符串与函数指针对应，连接信号
+                auto it_fun = map_act_.find(fun_str);
+                if (it_fun != map_act_.end())
+                {
+                    connect(action, &QAction::triggered, this, it_fun.value());
+                    //加入窗口动作列表，使快捷键在菜单关闭时同样生效
+                    if (action->shortcut().isEmpty() == false)
+                    {
+                        addAction(action);
+                    }
+                }
+                else
+                {
+                    //尚未实现的菜单项置灰，避免点击无反应
+                    action->setEnabled(false);
+                }
             }
         }
 

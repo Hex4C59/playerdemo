@@ -97,6 +97,12 @@ void Title::OpenFile()
     QString strFileName = QFileDialog::getOpenFileName(this, "打开文件", QDir::homePath(), 
         "视频文件(*.mkv *.rmvb *.mp4 *.avi *.flv *.wmv *.3gp)");
 
+    //用户取消选择时文件名可能为空，不往下传
+    if (strFileName.isEmpty())
+    {
+        return;
+    }
+
     emit SigOpenFile(strFileName);
 }
 
@@ -116,6 +122,12 @@ void Title::mouseDoubleClickEvent(QMouseEvent *event)
 void Title::resizeEvent(QResizeEvent *event)
 {
     //ChangeMovieNameShow();
+}
+
+void Title::contextMenuEvent(QContextMenuEvent* event)
+{
+    m_stMenu.exec(event->globalPos());
+    event->accept();
 }
 
 // void Title::mouseMoveEvent(QMouseEvent *event)

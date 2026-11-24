@@ -16,6 +16,7 @@
 #include <QMenu>
 #include <QActionGroup>
 #include <QAction>
+#include <QContextMenuEvent>
 
 #include "about.h"
 
@@ -42,7 +43,7 @@ private:
 
     bool InitUi();
 
-    //void contextMenuEvent(QContextMenuEvent* event);
+    void contextMenuEvent(QContextMenuEvent* event);
 
     void ShowAbout();
 

@@ -61,13 +61,13 @@
     "帧位":{},
     "比例":{},
     "屏幕":{},
-    "全屏":"/Enter",
+    "全屏":"OnFullScreenPlay/Enter",
     "全屏+":"/Ctrl+Enter",
-    "选项":"/F5",
+    "选项":"OnShowSettingWid/F5",
     "列表":"/F6",
     "控制":"/F7",
     "属性":"/Ctrl+F1",
-    "关于":"/F1",
-    "退出":"/Alt+F4"
+    "关于":"OnShowAbout/F1",
+    "退出":"OnCloseBtnClicked/Alt+F4"
 
 }

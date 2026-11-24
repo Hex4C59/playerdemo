@@ -121,16 +121,25 @@ bool Playlist::GetPlaylistStatus()
     return true;
 }
 
-void Playlist::OnAddFile(QString strFileName)
+bool Playlist::IsSupportedMedia(const QString &strFileName)
 {
-    bool bSupportMovie = strFileName.endsWith(".mkv", Qt::CaseInsensitive) ||
+    if (strFileName.isEmpty())
+    {
+        return false;
+    }
+
+    return strFileName.endsWith(".mkv", Qt::CaseInsensitive) ||
         strFileName.endsWith(".rmvb", Qt::CaseInsensitive) ||
         strFileName.endsWith(".mp4", Qt::CaseInsensitive) ||
         strFileName.endsWith(".avi", Qt::CaseInsensitive) ||
         strFileName.endsWith(".flv", Qt::CaseInsensitive) ||
         strFileName.endsWith(".wmv", Qt::CaseInsensitive) ||
         strFileName.endsWith(".3gp", Qt::CaseInsensitive);
-    if (!bSupportMovie)
+}
+
+void Playlist::OnAddFile(QString strFileName)
+{
+    if (!IsSupportedMedia(strFileName))
     {
         return;
     }
@@ -155,18 +164,10 @@ void Playlist::OnAddFile(QString strFileName)
 
 void Playlist::OnAddFileAndPlay(QString strFileName)
 {
-    bool bSupportMovie = strFileName.endsWith(".mkv", Qt::CaseInsensitive) ||
-        strFileName.endsWith(".rmvb", Qt::CaseInsensitive) ||
-        strFileName.endsWith(".mp4", Qt::CaseInsensitive) ||
-        strFileName.endsWith(".avi", Qt::CaseInsensitive) ||
-        strFileName.endsWith(".flv", Qt::CaseInsensitive) ||
-        strFileName.endsWith(".wmv", Qt::CaseInsensitive) ||
-        strFileName.endsWith(".3gp", Qt::CaseInsensitive);
-    if (!bSupportMovie)
+    if (!IsSupportedMedia(strFileName))
     {
         return;
     }
-
     QFileInfo fileInfo(strFileName);
     QList<QListWidgetItem *> listItem = ui->List->findItems(fileInfo.fileName(), Qt::MatchExactly);
     QListWidgetItem *pItem = nullptr;
